@@ -105,6 +105,10 @@ var processItems = function() {
 					if (item.PlaceBirth != '') {
 						var birthPlaceSql = 'INSERT INTO places (name, name_en, area, area_en) VALUES ("'+item.PlaceBirth+'", "'+item.PlaceBirth+'", "'+item.RegionBirth+'", "'+item.RegionBirth+'")';
 						connection.query(birthPlaceSql, function(err, birthPlaceResult) {
+							if (err) {
+								console.log(err);
+								console.log(birthPlaceSql);
+							}
 							connection.query('UPDATE persons SET birthplace = '+birthPlaceResult.insertId+' WHERE id = '+insertPersonResult.insertId);
 							connection.query('INSERT INTO personplaces (person, place, relation) VALUES ('+insertPersonResult.insertId+', '+birthPlaceResult.insertId+', "b")');
 						});
@@ -113,6 +117,10 @@ var processItems = function() {
 					if (item.PlaceDeath != '') {
 						var deathPlaceSql = 'INSERT INTO places (name, name_en, area, area_en) VALUES ("'+item.PlaceDeath+'", "'+item.PlaceDeath+'", "'+item.RegionDeath+'", "'+item.RegionDeath+'")';
 						connection.query(deathPlaceSql, function(err, deathPlaceResult) {
+							if (err) {
+								console.log(err);
+								console.log(deathPlaceSql);
+							}
 							connection.query('UPDATE persons SET deathplace = '+deathPlaceResult.insertId+' WHERE id = '+insertPersonResult.insertId);
 							connection.query('INSERT INTO personplaces (person, place, relation) VALUES ('+insertPersonResult.insertId+', '+deathPlaceResult.insertId+', "d")');
 						});
