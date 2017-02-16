@@ -4,13 +4,15 @@ var _ = require('underscore');
 
 var builder = require('xmlbuilder');
 
-var imageUrl = 'http://localhost:8080/moravian-bulk-import/images/'
+var imageUrl = 'http://localhost:8080/moravian-bulk-import/images/';
+
+var config = require('./config');
 
 var connection = mysql.createConnection({
-	host: 'localhost',
-	user: 'root',
-	password: '',
-	database : 'lebenslauf'
+	host: config.host,
+	user: config.user,
+	password: config.password,
+	database : config.database
 });
 
 connection.connect();

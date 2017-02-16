@@ -3,10 +3,10 @@ var mysql = require('mysql');
 var _ = require('underscore');
 
 var connection = mysql.createConnection({
-	host: 'localhost',
-	user: 'root',
-	password: '',
-	database : 'lebenslauf'
+	host: config.host,
+	user: config.user,
+	password: config.password,
+	database : config.database
 });
 
 connection.connect();
