@@ -36,4 +36,4 @@ As an example: a directory with images for the person with the firstname Benjami
 This tool was build around the London Memoirs metadata. Using it for metadata from other sources might require some tweaks.
 
 ## To-do
-* Fix person matching in `importPersons.js` and `importDocuments.js`. Matching is based on names and years of birth and date, however, if not year is defined in the input data, it might find a person with matching name but with any birth or death year.
+* Fix matching or persons in the database and the spreadsheet in `importPersons.js` and `importDocuments.js`. Matching is based on names and years of birth and date, however, if not year is defined in the input data, it might find a person with matching name but with any birth or death year.
