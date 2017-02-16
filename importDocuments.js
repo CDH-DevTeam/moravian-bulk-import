@@ -4,9 +4,9 @@ var _ = require('underscore');
 
 var builder = require('xmlbuilder');
 
-var imageUrl = 'http://localhost:8080/moravian-bulk-import/images/';
-
 var config = require('./config');
+
+var imageUrl = config.imageUrl;
 
 var connection = mysql.createConnection({
 	host: config.host,
