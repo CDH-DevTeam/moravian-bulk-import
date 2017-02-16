@@ -14,6 +14,7 @@ Finally, this script writes wp_import.xml file which can we imported into Wordpr
 
 ## config.js
 The `config.js` file contains configuration for the database connection. It also contains a url where the images are accessible. See more in the **images** section.
+The structure of the config file is as following:
 ``` javascript
 module.exports = {
 	host: 'localhost',
