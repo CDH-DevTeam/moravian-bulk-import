@@ -31,3 +31,9 @@ Image files are stored in subdirectories in the `images/` directory. The names o
 [FirstName] [LastNameNormal] [ReferenceNr (where '/' has been replaced for '-']
 ```
 As an example: a directory with images for the person with the firstname Benjamin, surname Beck and reference number C/3673/96 will be `Benjamin Beck C-36-3-96`.
+
+## Problems
+This tool was build around the London Memoirs metadata. Using it for metadata from other sources might require some tweakes.
+
+## To-do
+* Fix person matching in `importPersons.js` and `importDocuments.js`. Matching is based on names and years of birth and date, however, if not year is defined in the input data, it might find a person with matching name but with any birth or death year.
