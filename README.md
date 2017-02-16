@@ -25,7 +25,7 @@ module.exports = {
 ```
 
 ## Images
-Image files are stored in subdirectories in the `images/` directory. The names of the subdirectories follow this rule (using fields from the JSON file/spreadsheet):
+Image files are stored in subdirectories in the `images/` directory. The names of the subdirectories must follow this rule (using fields from the JSON file/spreadsheet):
 ```
 [FirstName] [LastNameNormal] [ReferenceNr (where '/' has been replaced for '-']
 ```
