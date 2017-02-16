@@ -2,6 +2,8 @@ var fs = require('fs');
 var mysql = require('mysql');
 var _ = require('underscore');
 
+var config = require('./config');
+
 var connection = mysql.createConnection({
 	host: config.host,
 	user: config.user,
