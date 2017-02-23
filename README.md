@@ -30,7 +30,7 @@ Image files are stored in subdirectories in the `images/` directory. The names o
 ```
 [FirstName] [LastNameNormal] [ReferenceNr (where '/' has been replaced for '-']
 ```
-As an example: a directory with images for the person with the firstname Benjamin, surname Beck and reference number C/3673/96 will be `Benjamin Beck C-36-3-96`.
+As an example: a directory with images for the person with the firstname Benjamin, surname Beck and reference number C/36/3/96 will be `Benjamin Beck C-36-3-96`.
 
 ## Problems
 This tool was build around the London Memoirs metadata. Using it for metadata from other sources might require some tweaks.
