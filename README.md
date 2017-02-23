@@ -28,7 +28,7 @@ module.exports = {
 ## Images
 Image files are stored in subdirectories in the `images/` directory. The names of the subdirectories must follow this rule (using fields from the JSON file/spreadsheet):
 ```
-[FirstName] [LastNameNormal] [ReferenceNr (where '/' has been replaced for '-']
+[FirstName] [LastNameNormal] [ReferenceNr (where '/' has been replaced for '-')]
 ```
 As an example: a directory with images for the person with the firstname Benjamin, surname Beck and reference number C/36/3/96 will be `Benjamin Beck C-36-3-96`.
 
