@@ -3,7 +3,8 @@
 A Node.js tool to import metadata into the Moravian memoirs metadata database [http://moravianlives.org:8001/admin] and simumlaneously import images into the Wordpress/Scripto transcription desk [http://moravianlives.org/memoirs/].
 
 ## How does it work?
-The script reads a JSON input file (input/london.json for the London memoirs) that is following the field scheme described in the "london memoirs" spreadsheet on Google Drive. The script first looks for persons not existing in the metadata database and inserts metadata about them. Then the script goes through the full input file, creating document entries for each in the metadata database. Finally, it outputs a wp_import.xml file for importing the transcription images into Wordpress/Scripto.
+The script reads a JSON input file (input/london.json for the London memoirs) that is following the field scheme described in the "london memoirs" spreadsheet on Google Drive. This can be done by exporting the spreadsheet as CSV and then we can convert it to JSON using this website: [http://www.convertcsv.com/csv-to-json.htm].
+The script first looks for persons not existing in the metadata database and inserts metadata about them. Then the script goes through the full input file, creating document entries for each in the metadata database. Finally, it outputs a wp_import.xml file for importing the transcription images into Wordpress/Scripto.
 
 ## importPersons.js
 It is important to run `node importPersons` first. This script will ensure that all persons in the input file exists in the metadata database before importing the documents. Splitting this into two files really just make everything easier as we are creating a lot of database entries (data entries and relations) and in many of those entries, we are depending on newly created id's.
