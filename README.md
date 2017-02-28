@@ -38,4 +38,3 @@ This tool was build around the London Memoirs metadata. Using it for metadata fr
 
 ## To-do
 * Fix matching or persons in the database and the spreadsheet in `importPersons.js` and `importDocuments.js`. Matching is based on names and years of birth and date, however, if not year is defined in the input data, it might find a person with matching name but with any birth or death year.
-* Change the code so that the name of the input JSON file can be added as a command-line parameter. Not it is fixed on looking for `input/london.json`

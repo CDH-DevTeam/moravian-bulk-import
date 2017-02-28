@@ -157,14 +157,28 @@ var processItems = function() {
 
 /*
 	Read the input JSON file and iterate each item of the file
-
-	TODO:
-		Read the file name to node.js parameter
+	The JSON file is defined as a command-line parameter (node importPersons input/filename.json)
 */
-fs.readFile('input/london.json', function(err, fileData) {
-	var data = JSON.parse(fileData);
 
-	dataItems = data;
+if (process.argv[2]) {
+	fs.readFile(process.argv[2], function(err, fileData) {
+		console.log('Open '+process.argv[2]);
 
-	processItems();
-});
+		if (err) {
+			console.log(err);
+			connection.end();
+		}
+
+		var data = JSON.parse(fileData);
+
+		dataItems = data;
+
+		processItems();
+	});
+}
+else {
+	console.log('Missing json input file parameter.');
+	console.log('Example: node importPersons.js [input.json])');
+
+	connection.end();
+}
