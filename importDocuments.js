@@ -8,6 +8,7 @@ var config = require('./config');
 
 var imageUrl = config.imageUrl;
 
+// Set up mySQL connection
 var connection = mysql.createConnection({
 	host: config.host,
 	user: config.user,
@@ -17,6 +18,7 @@ var connection = mysql.createConnection({
 
 connection.connect();
 
+// Helper function to create WordPress plage slug (friendly url)
 var toSlug = function(str) {
 	str = str.replace(/^\s+|\s+$/g, ''); // trim
 	str = str.toLowerCase();
@@ -38,10 +40,17 @@ var toSlug = function(str) {
 }
 
 var currentItem = 0;
+
+/*
+	Set up a transaction counter to help know when to write the output XML file
+	The program adds to the counter every time a new mysql query is executed and
+	decreases this number when the query has finished.
+*/
 var currentTransaction = 0;
 var transactionCount = 0;
 var attachmentCounter = 1;
 
+// Set up the base XML structure
 var xml = builder.create('rss');
 
 xml.att('version', '2.0');
@@ -54,7 +63,12 @@ xml.att('xmlns:wp', 'http://wordpress.org/export/1.2/');
 var xml_channel = xml.ele('channel');
 xml_channel.ele('wp:wxr_version', {}, '1.2');
 
+// Function to insert a new document to the database and retreive it's newly created ID
 var getDocumentId = function(personId, documentData, callback) {
+	/*
+		TODO:
+			Check if the document already exists and retreive existing ID instead of creating a new one
+	*/
 	var birthDate = documentData.DateBirth && String(documentData.DateBirth).split ? String(documentData.DateBirth).split('.') : documentData.DateBirth;
 	var deathDate = documentData.DateDeath && String(documentData.DateDeath).split ? String(documentData.DateDeath).split('.') : documentData.DateDeath;
 
@@ -155,7 +169,10 @@ var getDocumentId = function(personId, documentData, callback) {
 	});
 }
 
+// Function used to iterate each item of the JSON input file
 var processItems = function() {
+
+	// Function to check whether we should continue or write the output XML file
 	var endOrContinue = function() {
 
 		console.log('current: '+currentItem);
@@ -166,6 +183,8 @@ var processItems = function() {
 			processItems();
 		}
 		else if (currentTransaction == transactionCount) {
+
+			// Check if all transactions have finished
 			console.log('now I write!');
 			fs.writeFile('wp_import.xml', xml.end({ pretty: true}), function(error) {
 				if (error) {
@@ -180,6 +199,7 @@ var processItems = function() {
 	var birthDate = item.DateBirth && String(item.DateBirth).split ? String(item.DateBirth).split('.') : item.DateBirth;
 	var deathDate = item.DateDeath && String(item.DateDeath).split ? String(item.DateDeath).split('.') : item.DateDeath;
 
+	// Build up a query to get the persons ID (assuming it is in the database after running importPersons.js)
 	var sql = 'SELECT * FROM persons WHERE ('+
 		'surname = "'+item.LastNameNormal+'"'+(item.LastNameExac != '' ? ' OR surname_literal = "'+item.LastNameExac+'"' : '')+
 		') AND '+
@@ -197,17 +217,24 @@ var processItems = function() {
 	;
 
 	transactionCount++;
+
+	// Run the query
 	connection.query(sql, function(error, results, fields) {
 		currentTransaction++;
 
 		if (results && results.length > 0) {
+			// Continue if the person was found
 			console.log('--------');
 			console.log('searched for: '+item.LastNameNormal+', '+item.FirstName+', '+item.DateBirth+' - '+item.DateDeath);
 
+			// Check if the folder with the name of the document reference number exists
 			var folderName = (item.FirstName+' '+item.LastNameNormal).replace('  ', ' ')+' '+item.ReferenceNr.split('/').join('-');
-
 			if (fs.existsSync('images/'+folderName)) {
+
+				// Insert new document and get the new ID
 				getDocumentId(results[0].id, item, function(docId) {
+
+					// Add data to output XML
 					var xml_item = xml_channel.ele('item');
 
 					var itemTitle = item.FirstName+' '+item.LastNameNormal;
@@ -230,6 +257,8 @@ var processItems = function() {
 					xml_item.ele('wp:post_parent', {}, '0');
 					xml_item.ele('wp:post_type').dat('memoirs');
 					xml_item.ele('wp:is_sticky', {}, '0');
+
+					// Add document ID as a tag to WP import item
 					xml_item.ele('category', {'domain': 'post_tag', 'nicename': docId}).dat(docId);
 					xml_item.ele('category', {'domain': 'memoir-archive', 'nicename': 'london'}).dat('London');
 					xml_item.ele('category', {'domain': 'memoir-language', 'nicename': 'english'}).dat('English');
@@ -242,6 +271,7 @@ var processItems = function() {
 
 					var fileCounter = 1;
 
+					// Iterate each image file and add it to the output XML
 					_.each(files, function(file) {
 
 						var xml_attachment = xml_channel.ele('item');
@@ -263,6 +293,8 @@ var processItems = function() {
 						xml_attachment.ele('wp:post_name').dat(toSlug(itemTitle)+'-'+fileCounter);
 						xml_attachment.ele('wp:status').dat('publish');
 						xml_attachment.ele('wp:post_parent', {}, docId);
+
+						// Set post_type as attachment
 						xml_attachment.ele('wp:post_type').dat('attachment');
 						xml_attachment.ele('wp:is_sticky', {}, '0');
 						xml_attachment.ele('wp:attachment_url').dat(fileUrl);
@@ -283,6 +315,12 @@ var processItems = function() {
 	});
 }
 
+/*
+	Read the input JSON file and iterate each item of the file
+
+	TODO:
+		Read the file name to node.js parameter
+*/
 fs.readFile('input/london.json', function(err, fileData) {
 	var data = JSON.parse(fileData);
 

@@ -4,6 +4,7 @@ var _ = require('underscore');
 
 var config = require('./config');
 
+// Set up mySQL connection
 var connection = mysql.createConnection({
 	host: config.host,
 	user: config.user,
@@ -13,14 +14,17 @@ var connection = mysql.createConnection({
 
 connection.connect();
 
+// Define current item of the JSON file, start with 0
 var currentItem = 0;
 
+// Function used to iterate each item of the JSON file
 var processItems = function() {
 	var item = dataItems[currentItem];
 
 	var birthDate = item.DateBirth && String(item.DateBirth).split ? String(item.DateBirth).split('.') : item.DateBirth;
 	var deathDate = item.DateDeath && String(item.DateDeath).split ? String(item.DateDeath).split('.') : item.DateDeath;
 
+	// Build a query to look for the current person in the persons table in the database based on firstname, surname and years of birth and death
 	var sql = 'SELECT * FROM persons WHERE ('+
 		'surname = "'+item.LastNameNormal+'"'+(item.LastNameExac != '' ? ' OR surname_literal = "'+item.LastNameExac+'"' : '')+
 		') AND '+
@@ -37,11 +41,13 @@ var processItems = function() {
 		)
 	;
 
+	// Execute the query
 	connection.query(sql, function(error, results, fields) {
 		if (!results || results.length == 0) {
 			console.log('----not found----');
 			console.log('searched for: '+item.LastNameNormal+', '+item.FirstName+', '+item.DateBirth+' - '+item.DateDeath);
 
+			// If the person was not found, build up a query to insert her/him into the persons table
 			var sql = 'INSERT INTO persons ('+
 				'll_id, ll_idnum, page, surname_literal, surname, language, firstname, birthplace, ll_birthplace, deathplace, ll_deathplace, birth_year, birth_month, birth_day, ll_birth, death_year, death_month, death_day, ll_death, gender, ownhand, birthname, birthname_literal, system_group1, former_surname_literal, former_surname, familystatus, partner_name, comment, remove, reference, metadata, source) '+
 					'VALUES ('+
@@ -88,19 +94,29 @@ var processItems = function() {
 				(item.Autobiographical == 'TRUE' ? 1 : 0)+', '+ // ownhand
 				'"", '+ // birthname
 				'"", '+ // birthname_literal
-				'"P", '+ // systemgroup
+				'"P", '+ // systemgroup - not used
 				'"", '+ // former_surname_literal
 				'"", '+ // former_surname
 				'"'+item.MaritalStatus+'", '+ // familystatus
 				'"", '+ // partner_name
 				'"'+item.DescriptionLog+'", '+ // comment
-				'"", '+ // remove
+				'"", '+ // remove - not used
 				'"", '+ // reference
 				'NULL, '+ // metadata
 				'3)' // source
 			;
 
+			// Execute the insert person query
 			connection.query(sql, function(err, insertPersonResult) {
+
+				/*
+					Check if the person which has been inserted has places of birth or death
+					If so, insert the places into the places table and add relation betwen the place
+					and the person by writing relevant IDs into the personplaces table
+
+					TODO:
+						Check if the place already exists in the database, if so, connect the person to the existing place
+				*/
 				if (item.PlaceBirth != '' || item.PlaceDeath != '') {
 					if (item.PlaceBirth != '') {
 						var birthPlaceSql = 'INSERT INTO places (name, name_en, area, area_en) VALUES ("'+item.PlaceBirth+'", "'+item.PlaceBirth+'", "'+item.RegionBirth+'", "'+item.RegionBirth+'")';
@@ -131,6 +147,7 @@ var processItems = function() {
 		}
 
 		if (currentItem < dataItems.length-1) {
+			// Proceed if we have not reached the end of the list
 			currentItem++;
 
 			processItems();
@@ -138,6 +155,12 @@ var processItems = function() {
 	});
 }
 
+/*
+	Read the input JSON file and iterate each item of the file
+
+	TODO:
+		Read the file name to node.js parameter
+*/
 fs.readFile('input/london.json', function(err, fileData) {
 	var data = JSON.parse(fileData);
 
