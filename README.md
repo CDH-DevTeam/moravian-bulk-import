@@ -1,6 +1,6 @@
 # moravian-bulk-import
 
-A Node.js tool to import metadata into the Moravian memoirs metadata database [http://moravianlives.org:8001/admin] and simumlaneously import images into the Wordpress/Scripto transcription desk [http://moravianlives.org/memoirs/].
+A Node.js tool to import metadata into the Moravian memoirs metadata database [http://moravianlives.org:8001/admin] and prepares a WordPress XML import file to import images into the Wordpress/Scripto transcription desk [http://moravianlives.org/memoirs/]. The XML import is done via the WordPress importer.
 
 ## How does it work?
 The script reads a JSON input file (input/london.json for the London memoirs) that is following the field scheme described in the "london memoirs" spreadsheet on Google Drive. This can be done by exporting the spreadsheet as CSV and then we can convert it to JSON using this website: [http://www.convertcsv.com/csv-to-json.htm].
